@@ -1,0 +1,14 @@
+# Secretos
+.env
+
+# Entorno y basura
+.venv/
+__pycache__/
+.DS_Store
+
+# Datos locales: rutas grabadas, puntos del mapa, histórico
+data/
+
+# Voces: caché de ElevenLabs y carpetas de trabajo (los .zip sí van al repo)
+voces/_cache/
+voces/*/paquete/

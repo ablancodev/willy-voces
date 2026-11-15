@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Willy: diario del robot</title>
+<!--
+  Diario del proyecto Willy (robot aspirador Xiaomi), material para vídeo y post.
+  Cómo añadir una entrada: copiar un <article class="entry"> y pegarlo al final de <main>.
+  Etiquetas: hito · decision · problema · aprendizaje · pendiente.
+  Imágenes en log/img/ (capturas, fotos). Nunca tokens, contraseñas ni datos de la cuenta.
+-->
+<style>
+  :root {
+    --bg: #faf8f5; --fg: #1d1b18; --muted: #6b665e; --line: #e4dfd6; --card: #ffffff;
+    --accent: #e8590c; --hito: #2b8a3e; --decision: #1c64b8; --problema: #c92a2a;
+    --aprendizaje: #7048b6; --pendiente: #a07800; --code-bg: #f1ede6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #161513; --fg: #ece8e1; --muted: #9a948a; --line: #2e2b27; --card: #1e1c19;
+      --accent: #ff8a3d; --hito: #51cf66; --decision: #4dabf7; --problema: #ff6b6b;
+      --aprendizaje: #b197fc; --pendiente: #fcc419; --code-bg: #2a2723;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg);
+         font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  header, main { max-width: 760px; margin: 0 auto; padding: 0 16px; }
+  header { padding-top: 48px; padding-bottom: 8px; }
+  h1 { font-size: 2rem; margin: 0 0 4px; letter-spacing: -0.02em; }
+  .sub { color: var(--muted); margin: 0 0 24px; }
+  .status { background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--accent);
+            border-radius: 8px; padding: 12px 16px; margin-bottom: 32px; }
+  .status b { color: var(--accent); }
+  .day { font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted);
+         margin: 32px 0 12px; border-bottom: 1px solid var(--line); padding-bottom: 4px; }
+  .entry { background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+           padding: 16px 18px; margin-bottom: 14px; }
+  .entry h2 { font-size: 1.1rem; margin: 0 0 6px; }
+  .meta { display: flex; gap: 8px; align-items: center; font-size: .8rem; color: var(--muted); margin-bottom: 8px; }
+  .tag { font-weight: 600; text-transform: uppercase; letter-spacing: .05em; font-size: .7rem;
+         padding: 2px 7px; border-radius: 4px; border: 1px solid currentColor; }
+  .tag.hito { color: var(--hito); } .tag.decision { color: var(--decision); }
+  .tag.problema { color: var(--problema); } .tag.aprendizaje { color: var(--aprendizaje); }
+  .tag.pendiente { color: var(--pendiente); }
+  .entry p { margin: 6px 0; }
+  .video { margin-top: 10px; padding: 8px 12px; border-radius: 6px; background: var(--code-bg);
+           font-size: .9rem; }
+  .video::before { content: "Para el vídeo/post: "; font-weight: 600; color: var(--accent); }
+  code, pre { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: .85em; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+  pre { background: var(--code-bg); padding: 10px 12px; border-radius: 6px; overflow-x: auto; }
+  pre code { background: none; padding: 0; }
+  a { color: var(--accent); }
+  img { max-width: 100%; border-radius: 6px; border: 1px solid var(--line); }
+  footer { max-width: 760px; margin: 40px auto; padding: 0 16px; color: var(--muted); font-size: .85rem; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Willy: diario del robot</h1>
+  <p class="sub">Cómo convertir un robot aspirador Xiaomi en algo más que un aspirador: notas clave del proceso, para el vídeo y el post.</p>
+  <div class="status"><b>Estado actual:</b> tres sets de voz (héroe, borde, andaluz); instalado el andaluz.</div>
+</header>
+
+<main>
+
+  <div class="day">13 nov 2026</div>
+
+  <article class="entry">
+    <div class="meta"><span class="tag hito">hito</span><span>mañana</span></div>
+    <h2>Encontrar el robot en la red sin saber su IP</h2>
+    <p>Los dispositivos Xiaomi responden a un paquete "hello" del protocolo miIO (UDP, puerto 54321). Mandándolo a toda la red de casa contestó uno: el robot, en <code>192.168.1.45</code>. La respuesta trae su ID de dispositivo y el prefijo Xiaomi de la MAC lo confirma.</p>
+    <p>El hello responde a cualquiera, pero para todo lo demás (estado, mover, limpiar) hace falta el <b>token</b>: una clave de 32 caracteres hex que se crea al emparejarlo con Mi Home.</p>
+    <div class="video">plano de terminal con el escaneo y la respuesta del robot. Difuminar MAC e ID.</div>
+  </article>
+
+  <article class="entry">
+    <div class="meta"><span class="tag decision">decisión</span><span>mañana</span></div>
+    <h2>Lluvia de ideas: 10 proyectos y por dónde empezar</h2>
+    <p>Repaso de lo que ya trae de serie la app (programaciones por habitación, zonas prohibidas, escenas, voz) y 10 proyectos encima: "ven aquí" con NFC, mando de PS/Xbox, bot de Telegram, patrulla de seguridad con un móvil encima, mapa de calor del wifi, robot con IA que mira si te has dejado la vitro encendida…</p>
+    <p>Orden elegido: <b>1 "ven aquí" → 5 bot de Telegram → 6 patrulla → 10 robot con IA</b>. Sin rootear de momento: los scripts usan las mismas órdenes que la app y no tocan el firmware.</p>
+    <p><a href="https://claude.ai/artifact/LoxrPWfemVp9vZamV27hJZ">Doc completo: ideas y proyectos</a> · copia local: <a href="../robot-aspirador-ideas-y-proyectos.md">robot-aspirador-ideas-y-proyectos.md</a></p>
+    <div class="video">el proyecto 10 (IA + móvil como ojos) es el gancho del título.</div>
+  </article>
+
+  <article class="entry">
+    <div class="meta"><span class="tag aprendizaje">aprendizaje</span><span>tarde</span></div>
+    <h2>Cómo se saca el token</h2>
+    <p>Mi Home ya no enseña el token. La vía actual es el <a href="https://github.com/PiotrMachowski/Xiaomi-cloud-tokens-extractor">Xiaomi Cloud Tokens Extractor</a>: entras con tu cuenta Xiaomi (usuario/contraseña o escaneando un QR con la app) y lista cada dispositivo con su ID, IP, token y modelo exacto.</p>
+    <p>Regla del proyecto: el token va a <code>~/code/willy/.env</code> y nunca a un chat, ni a capturas, ni al repo.</p>
+  </article>
+
+  <article class="entry">
+    <div class="meta"><span class="tag hito">hito</span><span>tarde</span></div>
+    <h2>El extractor, metido en Docker</h2>
+    <p>Para no instalar dependencias de Python en el Mac, el extractor vive en <code>token-extractor/</code> con su Dockerfile (código fijado al commit <code>c4db715</code> del repo). Se lanza con:</p>
+    <pre><code>~/code/willy/token-extractor/run.sh</code></pre>
+    <p>Es interactivo y se ejecuta en una terminal propia, no a través de la IA, para que la contraseña y el token no pasen por el chat. Expone el puerto 31415 para ver el QR o el captcha en <code>http://127.0.0.1:31415</code>.</p>
+    <div class="video">buen momento para explicar por qué separar secretos del asistente de IA.</div>
+  </article>
+
+  <article class="entry">
+    <div class="meta"><span class="tag hito">hito</span><span>16:40</span></div>
+    <h2>Token conseguido (y sorpresa: es un S12)</h2>
+    <p>Entrando con el QR desde la app Mi Home, el extractor encontró el robot en el servidor europeo (<code>de</code>). No era un X10 ni un S10: es un <b>Xiaomi Robot Vacuum S12</b>, modelo <code>xiaomi.vacuum.b106eu</code>. Token y modelo, a <code>.env</code> (fuera de git).</p>
+    <p><img src="img/02-login-qr.jpg" alt="QR de login del extractor en el navegador, en 127.0.0.1:31415"></p>
+    <p><img src="img/01-extractor-resultado.jpg" alt="Resultado del extractor con ID, MAC y token pixelados"></p>
+    <div class="video">el QR en el navegador y el resultado (ya pixelado) cuentan bien el paso en dos planos.</div>
+  </article>
+
+  <article class="entry">
+    <div class="meta"><span class="tag problema">problema</span><span>16:50</span></div>
+    <h2>python-miio de PyPI no arranca</h2>
+    <p>La versión publicada (0.5.12) rompe con el <code>click</code> actual (<code>TypeError: argument of type 'bool' is not iterable</code>) y no trae el modo genérico MIoT que necesita este robot. Solución: instalarlo desde el repo y fijar click.</p>
+    <pre><code>pipx install "git+https://github.com/rytilahti/python-miio.git"
+pipx inject python-miio "click&lt;8.2"</code></pre>
+    <p>El primer intento además falló con "Unable to discover the device": el robot dormía el wifi. Al reintentar, respondió.</p>
+  </article>
+
+  <article class="entry">
+    <div class="meta"><span class="tag hito">hito</span><span>16:55</span></div>
+    <h2>Primera conversación con el robot</h2>
+    <pre><code>miiocli genericmiot --ip 192.168.1.45 --token $MIIO_TOKEN status</code></pre>
+    <p>Firmware 4.3.3_0016, cargando al 100 %. Devuelve todo lo que la app sabe: modo (barrer, fregar o ambos), potencia, nivel de agua, vida de cepillos y filtro, mapas guardados (5), "no molestar"…</p>
+    <p>Dos hallazgos para lo que viene: tiene una propiedad <code>point-zone:target-point</code> que se puede escribir, o sea, <b>"ve a este punto" sin rootear</b>. Pero el mapa viaja <b>cifrado</b> (<code>map-encrypt: Open</code>), así que las coordenadas de cada habitación habrá que descubrirlas a mano.</p>
+    <div class="video">el momento "me contesta": la lista de estado en la terminal.</div>
+  </article>
+
+  <article class="entry">
+    <div class="meta"><span class="tag hito">hito</span><span>16:45</span></div>
+    <h2>Primer script: "sal, da una vuelta y vuelve"</h2>
+    <p>Listando las acciones del robot (<code>miiocli genericmiot … actions</code>) aparecen "Start Only Sweep" (aspirar sin fregar) y "Go charging". Con eso basta para un paseo: <code>paseo.py</code> mira la batería, lo saca de la base, lo deja dar vueltas unos segundos y lo manda de vuelta, esperando a que vuelva a cargar. Ctrl+C lo devuelve a casa en cualquier momento.</p>
+    <pre><code>./paseo.py        # vuelta de 40 s
+./paseo.py 90     # vuelta de 90 s</code></pre>
+    <div class="video">grabar en paralelo la terminal y el robot saliendo de la base.</div>
+  </article>
+
+  <article class="entry">
+    <div class="meta"><span class="tag aprendizaje">aprendizaje</span><span>16:55</span></div>
+    <h2>Inventario: qué deja hacer el S12 por red local</h2>
+    <p>52 acciones en 8 grupos: limpieza (barrer, fregar, ambos, por habitación), carga, punto y zona, programaciones, mapas (lista de habitaciones, ruta actual, renombrar, dividir), no molestar, voces y consumibles. Lo que no aparece es un mando manual de direcciones: el joystick tendrá que ser "ir a punto" o rootear.</p>
+    <p>Pistas para las coordenadas: <code>get-cur-path</code> (la ruta que va haciendo) y <code>get-map-room-list</code> (habitaciones con su ID).</p>
+  </article>
+
+  <article class="entry">
+    <div class="meta"><span class="tag problema">problema</span><span>17:10</span></div>
+    <h2>¿Dibujar nuestro propio mapa? El robot no lo suelta</h2>
+    <p>Idea: leer el mapa, pintarlo en HTML y ponerle nosotros los nombres a las habitaciones. Por red local el robot da la lista de mapas (5, el actual "Mapa5") y la de habitaciones, pero no la geometría: el plano solo lo sube cifrado a la nube de Xiaomi. Truco de protocolo: las acciones con parámetros piden <code>[{"piid": …, "value": …}]</code>, no valores sueltos.</p>
+    <p>Plan B: reconstruir el mapa con la ruta que va haciendo (<code>get-cur-path</code>). <code>paseo.py</code> ya la graba en <code>data/</code> en cada vuelta.</p>
+  </article>
+
+  <article class="entry">
+    <div class="meta"><span class="tag aprendizaje">aprendizaje</span><span>17:15</span></div>
+    <h2>Lo que cuenta el robot mientras se mueve: su ruta</h2>
+    <p>Primer paseo grabado (<code>data/paseo-20261113-171127.jsonl</code>). Preguntando cada 5 s por <code>get-cur-path</code>, el robot devuelve una lista plana:</p>
+    <pre><code>[1,  -0.005, -0.004, 0.640, 0,   0.048, -0.054, -0.176, 0,   …,   1794586339]
+ │   └───── punto 1 ──────┘   └───── punto 2 ──────┘        └ marca de tiempo (Unix)
+ └ índice del primer punto</code></pre>
+    <ul>
+      <li><b>Primer número:</b> en este paseo pensé que era el tipo de tramo (2 salir, 1 limpiar). <b>Corregido a las 17:46:</b> es el índice del primer punto que trae la respuesta (ver la entrada de la limpieza con botón).</li>
+      <li><b>Cada punto son 4 números:</b> x e y en metros (la base, cerca de 0,0), el ángulo hacia donde mira en radianes (−π a π) y un cuarto valor que de momento siempre vale 0.</li>
+      <li><b>Es acumulativo:</b> cada respuesta trae el tramo entero desde su inicio, no solo lo nuevo. Cuando solo llega la marca de tiempo, no hay tramo activo (cambio de fase).</li>
+    </ul>
+    <table style="width:100%;border-collapse:collapse;font-size:.9rem">
+      <tr><th align="left">Segundo</th><th align="left">Respuesta</th></tr>
+      <tr><td>0–5</td><td>solo marca de tiempo</td></tr>
+      <tr><td>10–21</td><td>tipo 2, un punto en (−0,09, 0,01): saliendo</td></tr>
+      <tr><td>26–31</td><td>solo marca de tiempo</td></tr>
+      <tr><td>36–51</td><td>tipo 1, de 3 a 11 puntos; avanza 17 cm y gira sobre sí mismo</td></tr>
+    </table>
+    <p>Este primer paseo se cortó a los 56 s (un fallo de lectura tumbaba el script; ya corregido), así que solo da para entender el formato.</p>
+    <p><b>Cómo reconstruir el mapa con esto:</b></p>
+    <ol>
+      <li>Grabar paseos largos y quedarse con la última respuesta de cada tramo (la más completa).</li>
+      <li>Pintar los puntos (x, y) en un SVG. Cada punto se dibuja como un círculo del tamaño del robot (unos 35 cm), así la ruta se convierte en "suelo pisado".</li>
+      <li>La silueta de ese suelo pisado es el plano de la casa: donde nunca entra hay pared o mueble.</li>
+      <li>Sobre ese dibujo, marcar a mano cada habitación (un rectángulo con nombre) y guardar sus coordenadas. Con eso, "ve a la cocina" es mandarlo al centro de su rectángulo.</li>
+    </ol>
+    <div class="video">el plano apareciendo poco a poco a partir de la ruta es la animación estrella del vídeo.</div>
+  </article>
+
+  <article class="entry">
+    <div class="meta"><span class="tag hito">hito</span><span>17:25</span></div>
+    <h2>mapa.py: de la ruta al dibujo</h2>
+    <p>Script que lee un paseo grabado y genera un HTML con la ruta (naranja limpiando, azul saliendo o volviendo), el "suelo pisado" (círculos de 35 cm) y una cuadrícula de 1 m. El paseo de las 17:15 sale con 65 puntos en 1,77 × 0,63 m.</p>
+    <pre><code>./mapa.py          # dibuja el último paseo de data/</code></pre>
+  </article>
+
+  <article class="entry">
+    <div class="meta"><span class="tag problema">problema</span><span>17:30</span></div>
+    <h2>Experimento del cuadrado: el robot se queda rebotando en una esquina</h2>
+    <p>Para validar el dibujo, el usuario cerró con obstáculos un recinto más o menos cuadrado y lanzó una vuelta de 120 s. El robot fue directo a la esquina donde estaba él y se quedó rebotando ahí hasta que lo mandamos a la base.</p>
+    <p>Los datos lo reflejan de forma curiosa: <b>durante los 2 minutos de limpieza no llegó ni un punto</b> (solo marcas de tiempo). La ruta apareció solo en la vuelta: 29 puntos en una línea de unos 1,5 m, que empieza en (0, 0) y acaba en (−0,61, 1,34).</p>
+    <p>Hipótesis: con los obstáculos la sala ya no se parece al mapa guardado, el robot no sabe dónde está y limpia "a ciegas" sin informar de ruta. Y el (0, 0) no sería la base, sino el inicio de cada tramo (aquí, la esquina). A confirmar.</p>
+    <div class="video">contraste entre lo que hizo el robot (vídeo) y lo que contó (casi nada): buen momento de "la realidad no es como el plan".</div>
+  </article>
+
+  <article class="entry">
+    <div class="meta"><span class="tag hito">hito</span><span>17:46</span></div>
+    <h2>Primer mapa dibujado: un recinto de 1,3 × 1,8 m</h2>
+    <p>Limpieza lanzada con el botón del robot dentro de un recinto hecho con obstáculos bajos, y la ruta grabada en paralelo con <code>grabar.py</code> (solo escucha, no manda órdenes). Resultado: <b>pasadas paralelas</b> en un área de 1,27 × 1,84 m, la forma típica de una limpieza ordenada.</p>
+    <p><img src="img/03-primer-mapa.png" alt="Ruta del robot dibujada: pasadas paralelas de ida y vuelta dentro de un recinto de 1,3 por 1,8 metros"></p>
+    <p><b>Tres descubrimientos:</b></p>
+    <ol>
+      <li><b>El primer número es un índice, no un tipo.</b> En esta limpieza valió 1, 67, 148, 221, 287 y 353: es la posición del primer punto dentro de la ruta completa. Así se pueden juntar respuestas solapadas y saber cuántos puntos faltan.</li>
+      <li><b>Solo vimos el 60 % de la ruta</b> (235 puntos de unos 390). Cada vez que una lectura falla por wifi, la ventana salta hacia delante y perdemos el trozo intermedio. Mejora pendiente: pedir los puntos desde el último índice recibido (para eso parecen estar los parámetros <code>start-cleaning-point</code> y <code>end-cleaning-point</code>).</li>
+      <li><b>Durante los primeros 5 minutos no hubo ruta.</b> El robot estuvo en estado 6 todo el rato, pero los puntos no empezaron a llegar hasta el minuto 5. Luego pasó a estado 3 (volviendo) y 4 (cargando). Falta saber qué hace en esos 5 minutos.</li>
+    </ol>
+    <div class="video">poner lado a lado el vídeo cenital de la limpieza y este dibujo.</div>
+  </article>
+
+  <article class="entry">
+    <div class="meta"><span class="tag hito">hito</span><span>18:00</span></div>
+    <h2>Willy: mapa con puntos etiquetados y botón "Ve"</h2>
+    <p>Recapitulando, ya tenemos el "hola mundo" (<code>paseo.py</code>), el inventario de funciones, cómo lee el espacio y el movimiento, y cómo dibujar un mapa. Siguiente capa: poder decirle <b>"Willy, ve al punto A"</b>.</p>
+    <p><code>willy.py</code> levanta una web local (<code>http://localhost:8765</code>) con la ruta de fondo. Tocas el mapa, le pones nombre al punto y queda guardado en <code>puntos.json</code>, en metros. Cada punto tiene un botón "Ve". También funciona desde la terminal:</p>
+    <pre><code>./willy.py              # la web
+./willy.py ve cocina    # mandarlo a un punto
+./willy.py puntos       # listar puntos</code></pre>
+    <p><img src="img/04-willy-puntos.png" alt="Web de Willy: la ruta del robot de fondo con dos puntos etiquetados, A y B, y una lista con botones Ve"></p>
+    <p>Por dentro, "Ve" usa la acción <code>start-point-clean-ii</code>, que recibe un punto como texto <code>"[x,y]"</code>. Lo que no sabemos es en qué unidades ni con qué origen: hipótesis inicial, milímetros con el mismo origen que la ruta (<code>escala: 1000</code> en <code>puntos.json</code>). Toca calibrar.</p>
+    <div class="video">el clic en el mapa → el robot se pone en marcha es el momento "magia".</div>
+  </article>
+
+  <article class="entry">
+    <div class="meta"><span class="tag problema">problema</span><span>18:10</span></div>
+    <h2>Primer "Ve al punto A": mucho ruido y casi sin moverse</h2>
+    <p>Punto A en (−0,64, 1,24) m, enviado como <code>[-638, 1235]</code> (hipótesis de milímetros). El robot salió con el motor a tope, muy ruidoso, se movió apenas y volvió a la base. No había grabación en marcha, así que no sabemos dónde estuvo.</p>
+    <p>Después, el robot conserva <code>target-point = [-638, 1235]</code> (la orden llegó tal cual) y el código de fallo pasó de 2105 a 2007.</p>
+    <p>Hipótesis más probable: <code>start-point-clean</code> no es "ir a un punto", sino la <b>limpieza puntual</b> de las apps de Xiaomi: va al punto y hace una espiral intensa en un cuadrado de ~1,5 m alrededor. Eso explica el ruido y el poco avance. Si además el punto no era el que creíamos, la espiral la hizo donde estaba. Para la próxima: grabar siempre al mandar "Ve" y bajar la potencia a silencioso antes.</p>
+  </article>
+
+  <article class="entry">
+    <div class="meta"><span class="tag problema">problema</span><span>18:05</span></div>
+    <h2>Segundo "Ve": ahora con ruta grabada, y no va hacia A</h2>
+    <p>Esta vez "Ve" grababa la ruta solo. Resultado: dos minutos girando casi en el sitio, cerca de la base (−0,08, −0,10), y luego unos 40 cm de recorrido antes de volver. Nunca se dirigió a A (−0,64, 1,24). Conclusión: el robot no entiende nuestras coordenadas como pensábamos; su mapa tiene otro origen u otras unidades.</p>
+    <p>Dos sorpresas de ajustes:</p>
+    <ul>
+      <li>Aunque "Ve" ponía la potencia en silencioso antes de salir, <b>la limpieza puntual la sube a turbo al arrancar</b>. Bajándola con el robot ya en marcha, sí la acepta.</li>
+      <li>Pulsar "Ve" dos veces seguidas hizo que el segundo guardara como "original" el silencioso del primero. Corregido: ahora recuerda los ajustes de verdad, también pone solo aspirar (no fregar) y lo restaura todo al volver.</li>
+    </ul>
+  </article>
+
+  <article class="entry">
+    <div class="meta"><span class="tag aprendizaje">aprendizaje</span><span>18:10</span></div>
+    <h2>Buscando las coordenadas del robot por otros caminos</h2>
+    <ul>
+      <li>La app no tiene limpieza puntual en este modelo, así que no podemos copiarle un punto.</li>
+      <li>Las paredes virtuales, zonas y el mapa <b>no se pueden leer por red local</b> (código −4001); solo viajan entre la app y la nube.</li>
+      <li>Mapa5 cambió de ID (es una marca de tiempo) justo al terminar la limpieza en el recinto: el robot actualiza el mapa al acabar. Ojo con experimentos que cambien la casa.</li>
+      <li>Tercer "Ve" a A, vigilando el robot: salió (estado 5, tipo "punto"), avanzó unos 25 cm y a los 20 s ya volvía (estado 3). Y el destino guardado siguió siendo <code>[338, 1314]</code>, no el <code>[-638, 1235]</code> enviado: <b>el robot reescribe nuestro punto</b>. Parece que lo considera inalcanzable y lo cambia o lo abandona.</li>
+    </ul>
+    <p>Siguiente prueba: mandar destinos directamente en unidades del robot con <code>./willy.py ve-raw X Y</code> y ver dónde acaba.</p>
+  </article>
+
+  <article class="entry">
+    <div class="meta"><span class="tag problema">problema</span><span>18:15</span></div>
+    <h2>Prueba con [1100, 1100]: el baile de ida y vuelta</h2>
+    <p>Destino enviado tal cual en unidades del robot (<code>./willy.py ve-raw 1100 1100</code>). Lo que se vio: avanza 15 cm y vuelve, 60 cm y vuelve, otros 60 cm y vuelve, 15 cm y vuelve. La ruta grabada lo confirma: va y viene en línea recta entre y = −0,24 y y = +0,21 m.</p>
+    <p>El patrón se repite en todos los "Ve": unos 20 s en modo punto (estado 5) y enseguida pasa a "volviendo" (estado 3), igual con [1100, 1100] que con A. Conclusión provisional: <b>no es un problema de coordenadas, el robot abandona la orden sea cual sea el punto</b>.</p>
+    <p>Pista encontrada en <a href="https://community.home-assistant.io/t/howto-xiaomi-vacuum-zoned-cleaning/51293/442">la comunidad de Home Assistant</a>: la app lo hace en dos pasos, primero fija <code>target-point</code> y luego lanza <code>start-point-clean</code> sin parámetros. Nosotros usábamos la variante <code>-ii</code> con el punto dentro. "Ve" ya usa los dos pasos.</p>
+    <p>Otra pista para el mapa: un hilo sobre una integración con <a href="https://community.home-assistant.io/t/xiaomi-vacuum-local-control-live-map-65-models-ijai-dreame-viomi-xiaomi/1015583">control local y mapa en vivo para 65 modelos</a> (ijai, Dreame, Viomi, Xiaomi). Por revisar si incluye el S12.</p>
+  </article>
+
+  <article class="entry">
+    <div class="meta"><span class="tag aprendizaje">aprendizaje</span><span>18:22</span></div>
+    <h2>"Ve" en dos pasos: aguanta más, pero sigue sin llegar</h2>
+    <p>Con el método de la app (fijar <code>target-point</code> y luego <code>start-point-clean</code>), el robot <b>aguantó 67 s en modo punto</b> en vez de 20, e hizo un movimiento en L, como colocándose. Después volvió a la base y repitió dos veces el ir y venir de unos 50 cm.</p>
+    <table style="width:100%;border-collapse:collapse;font-size:.9rem">
+      <tr><th align="left">Hora</th><th align="left">Estado</th><th align="left">Código de fallo</th></tr>
+      <tr><td>18:18:34</td><td>5, modo punto</td><td>2110 → 2108</td></tr>
+      <tr><td>18:19:39</td><td>pasa a volver (3)</td><td>2007</td></tr>
+      <tr><td>18:21:12</td><td>en la base (4)</td><td>2007</td></tr>
+    </table>
+    <p>Los códigos de fallo son la nueva pista. Algunas webs de códigos dicen que 2110 es "no encuentro la base", sin fuente oficial. Sospecha: el robot está desorientado, quizá porque Mapa5 se guardó de nuevo con los obstáculos del recinto. El ir y venir junto a la base cuadra con un robot intentando situarse.</p>
+  </article>
+
+  <article class="entry">
+    <div class="meta"><span class="tag aprendizaje">aprendizaje</span><span>18:30</span></div>
+    <h2>La voz del robot se descarga de una URL</h2>
+    <p>El servicio de idioma tiene dos acciones. <code>get-download-status</code> dice qué voz tiene puesta: <code>en_US</code>, aunque el idioma de la app sea <code>es_ES</code>. Y <code>download-voice</code> recibe tres cosas:</p>
+    <ul>
+      <li><code>target-voice</code>: el nombre de la voz,</li>
+      <li><code>voice-url</code>: <b>la dirección desde la que descargar el paquete de voz</b>,</li>
+      <li><code>voice-mdfive</code>: su huella MD5, para comprobar que llega entero.</li>
+    </ul>
+    <p>Es decir: en teoría se le puede servir un paquete de voz propio desde el Mac. Falta saber el formato del paquete (qué archivos y con qué nombres) para este modelo.</p>
+    <div class="video">"le he puesto mi voz al robot" es un gancho muy fuerte, si sale.</div>
+  </article>
+
+  <article class="entry">
+    <div class="meta"><span class="tag aprendizaje">aprendizaje</span><span>18:35</span></div>
+    <h2>Cómo es un paquete de voz de Xiaomi (y por qué podemos hacer el nuestro)</h2>
+    <ul>
+      <li><a href="https://vacuum.mindsolo.net/en/models/xiaomi.vacuum.b106eu">vacuum.mindsolo.net</a> tiene una ficha del S12 con voces compatibles, pero casi todas en ruso y con descarga tras registro.</li>
+      <li>El proyecto <a href="https://github.com/sverdlyuk/glados_ukr">GLaDOS UKR</a> documenta el formato: un <b>.tar con archivos .mp3 sueltos, sin carpetas</b>, cada uno con un número (<code>130.mp3</code> = "Empezando la limpieza", <code>201.mp3</code> = "Limpieza terminada"…), a 96 kbps y 44,1 o 16 kHz. Su <a href="https://github.com/sverdlyuk/glados_ukr/blob/main/xiaomi_glados_uk_mapping.csv">tabla de frases</a> trae 84, con el texto en inglés (copia en <code>data/voz-frases-xiaomi.csv</code>).</li>
+      <li>El autor no ha conseguido instalarlo en un <code>xiaomi.vacuum</code> por falta de robot. El nuestro tiene la acción <code>download-voice</code>: podemos ser los primeros en probarlo.</li>
+    </ul>
+    <p>Ingredientes en el Mac: <code>say</code> con voces en español (Mónica, Eddy, Flo…) y <code>ffmpeg</code> para pasarlas a mp3.</p>
+    <div class="video">"le he hecho una voz nueva a mi robot con 84 frases": proceso + resultado sonando.</div>
+  </article>
+
+  <article class="entry">
+    <div class="meta"><span class="tag decision">decisión</span><span>18:40</span></div>
+    <h2>La voz de Willy, con ElevenLabs</h2>
+    <p>En vez de las voces del Mac, usamos la cuenta de ElevenLabs (la clave ya estaba en el entorno). Hay cinco voces en español de España; muestras de cuatro con la misma frase, "¡Hola! Soy Willy. Salgo a limpiar, volveré con la misión cumplida.", en <code>data/voz-muestras/</code>: Inés, David Martin, Diego Bayón y Fermín.</p>
+    <p>Coste: las 84 frases son unos 3.500 caracteres, dentro del saldo del mes.</p>
+    <div class="video">el casting de voces del robot: poner las cuatro muestras seguidas.</div>
+  </article>
+
+  <article class="entry">
+    <div class="meta"><span class="tag decision">decisión</span><span>18:45</span></div>
+    <h2>Willy, héroe de dibujos: voz diseñada a medida</h2>
+    <p>Estilo elegido: "tipo Patrulla Canina", un héroe de rescate con mucha energía y frases de misión (inspirado, sin copiar voces ni frases de la serie). Con el diseño de voces de ElevenLabs se describe la voz con texto y devuelve tres propuestas.</p>
+    <p>Primer intento bloqueado: ElevenLabs no permite diseñar voces infantiles. Segundo intento, como actor adulto haciendo de héroe de dibujos animados, con acento de España: tres propuestas en <code>data/voz-muestras/cachorro-1..3.mp3</code> con la frase "¡Willy al rescate! ¡Patrulla de limpieza en marcha!…".</p>
+  </article>
+
+  <article class="entry">
+    <div class="meta"><span class="tag hito">hito</span><span>18:55</span></div>
+    <h2>Guion de Willy: 84 frases de héroe de limpieza</h2>
+    <p>Elegida la voz "cachorro 1". Las 84 frases del robot reescritas en tono de patrulla de rescate (<code>data/voz-willy.csv</code>, unos 4.000 caracteres). Algunos ejemplos:</p>
+    <ul>
+      <li><code>130</code> Starting cleaning → "¡Willy al rescate! Empieza la misión de limpieza."</li>
+      <li><code>210</code> Cleaning completed. Returning to dock → "¡Misión cumplida! Vuelvo a la base a recargar energía."</li>
+      <li><code>720</code> Robot is stuck → "¡Socorro! Me he quedado atascado. Cámbiame de sitio y vuelvo a la misión."</li>
+      <li><code>520</code> I'm here → "¡Estoy aquí! ¡Guau!"</li>
+    </ul>
+    <p>Tropiezo: ElevenLabs no deja guardar la voz diseñada porque la cuenta ya tiene el máximo de 3 voces propias. Hay que liberar un hueco.</p>
+  </article>
+
+  <article class="entry">
+    <div class="meta"><span class="tag hito">hito</span><span>19:00</span></div>
+    <h2>Paquete de voz de Willy, listo</h2>
+    <p>Voz elegida: Bee (una voz propia ya guardada en la cuenta de ElevenLabs), con ajustes enérgicos (estabilidad 0,25, estilo 0,7). Generadas las 82 frases sin errores, recodificadas al formato del paquete de ejemplo (mp3 estéreo, 44,1 kHz, 96 kbps) y empaquetadas en un <code>.tar.gz</code> plano con los sonidos de encendido y apagado del ejemplo: <code>data/voz-willy/willy_es.tar.gz</code>, 84 archivos, 3,7 MB.</p>
+    <p>Para instalarlo, <code>voz.py</code> levanta un servidor web temporal en el Mac, le pasa al robot la URL y el MD5 con <code>download-voice</code> y sigue el progreso. Así se ve en el registro del servidor si el robot llega a pedir el archivo.</p>
+    <pre><code>./voz.py          # instala la voz de Willy
+./voz.py estado   # qué voz tiene ahora</code></pre>
+  </article>
+
+  <article class="entry">
+    <div class="meta"><span class="tag problema">problema</span><span>18:45</span></div>
+    <h2>El robot se descarga la voz… y sigue hablando igual</h2>
+    <p>Medio éxito. Con <code>./voz.py</code>, el robot aceptó la orden (<code>code: 0</code>) y <b>se descargó el paquete desde el Mac</b>: en el registro del servidor aparece <code>192.168.1.45 "GET /willy_es.tar.gz" 200</code>. Es la prueba de que acepta voces desde una URL nuestra. Pero después sigue con <code>en_US</code> y el estado de descarga no pasa de 0: lo descarta.</p>
+    <p>Pista sobre el porqué: los tipos de limpieza de este robot (Global, Corner, Area, Point, Explore…) coinciden con los nombres de archivo de los paquetes de <b>Ijai</b> (<code>12sound_corner_clean_start.mp3</code>, <code>14sound_point_clean_start.mp3</code>…), no con la numeración de otros Xiaomi. El S12 parece de la familia Ijai, cuyo formato es distinto: <b>.zip con mp3 con nombre y un <code>md5.ini</code></b> con la huella de cada archivo. 98 frases (<code>data/voz-frases-ijai.csv</code>).</p>
+  </article>
+
+  <article class="entry">
+    <div class="meta"><span class="tag hito">hito</span><span>18:48</span></div>
+    <h2>¡Voz instalada en formato Ijai!</h2>
+    <p>Rehecho el paquete con el formato de Ijai: 91 mp3 con su nombre (<code>11sound_global_clean_start.mp3</code>, <code>43sound_I_am_here.mp3</code>…), un <code>md5.ini</code> con la huella de cada uno y todo en un <code>.zip</code> plano. De 87 frases distintas, 34 se reutilizaron del primer intento y 53 se generaron nuevas (unos 2.300 caracteres).</p>
+    <pre><code>[18:47:13] servidor: 192.168.1.45 "GET /willy_es_ijai.zip HTTP/1.1" 200
+[18:47:16] {'destino': 'es_ES', 'actual': 'es_ES', ...}
+[18:47:16] ¡voz instalada!</code></pre>
+    <p><b>Confirmado de oído: funciona perfectamente.</b> Esta vez la voz actual pasa de <code>en_US</code> a <code>es_ES</code> en tres segundos. Confirmado de paso que el S12 es de la familia Ijai. Para oírlo sin moverlo: la alarma de "buscar robot" (<code>siid 4, piid 1 = true</code>) dice "¡Estoy aquí! ¡Guau!".</p>
+    <div class="video">EL momento del vídeo: lanzar ./voz.py y que el robot conteste con su nueva voz.</div>
+  </article>
+
+  <article class="entry">
+    <div class="meta"><span class="tag hito">hito</span><span>19:05</span></div>
+    <h2>Sets de voz: Willy héroe y Willy borde</h2>
+    <p>Con la voz funcionando, segunda personalidad: un Willy sarcástico y un poco bruto, sin tocar el set héroe. Ahora cada set vive en <code>data/voces/&lt;set&gt;/</code> con su <code>frases.json</code>, y dos scripts lo manejan:</p>
+    <pre><code>./voces.py coste borde   # 87 frases, 4.731 caracteres de ElevenLabs
+./voces.py crear borde   # genera lo que falte y monta borde.zip
+./voz.py borde           # lo instala en el robot
+./voz.py heroe           # vuelta al héroe</code></pre>
+    <p>El audio se guarda en caché por texto y voz: el set héroe se reconstruyó sin gastar ni un carácter. Algunas frases del borde:</p>
+    <ul>
+      <li>Empezar a limpiar: "¿Otra vez quieres que te limpie la mierda de la casa? Venga, vale…"</li>
+      <li>Volver a la base: "Vuelvo a casa, porque estoy hasta las narices de trabajar por ti, flojo."</li>
+      <li>Buscar robot: "¡Aquí estoy! ¿Tanto te cuesta mirar debajo del sofá?"</li>
+      <li>Atascado: "Me he atascado. Gracias por llenar el suelo de basura. Ven a sacarme."</li>
+    </ul>
+    <p><b>Cambio de set comprobado:</b> <code>./voz.py borde</code> con el héroe ya instalado y el mismo nombre de voz (<code>es_ES</code>): el robot lo descarga igual y "buscar robot" ya contesta con la frase borde. Se puede cambiar de personalidad cuando se quiera.</p>
+    <div class="video">el mismo robot, dos personalidades: cambiar de set en directo y lanzar "buscar robot" con cada una.</div>
+  </article>
+
+  <article class="entry">
+    <div class="meta"><span class="tag hito">hito</span><span>19:12</span></div>
+    <h2>Tercer set: Willy andaluz de pueblo</h2>
+    <p>"Killo", "mi arma", "ozú", "no ni na"… Bee habla en castellano neutro, así que el acento sale del modelo <code>eleven_v3</code>, que acepta etiquetas de dirección dentro del texto. Se probaron tres muestras: v2 con el acento escrito ("ezcucho"; apenas se nota), v3 con <code>[acento andaluz de pueblo, muy marcado]</code> y v3 con <code>[acento andaluz]</code>. Ojo: la etiqueta también se cobra en cada frase, así que se usó la corta.</p>
+    <p><code>voces.py</code> admite ahora modelo y prefijo por set (<code>voz.json</code>). 87 frases, unos 4.700 caracteres, instalado con <code>./voz.py andaluz</code>. Algunas:</p>
+    <ul>
+      <li>Empezar: "Killo, mi arma, ¿otra vez a limpiar? Ozú, qué cruz."</li>
+      <li>Buscar robot: "¡Killo, que estoy aquí, debajo del sofá!"</li>
+      <li>Fregado terminado: "Esto brilla más que la Giralda. Me voy pa casa."</li>
+    </ul>
+    <div class="video">tres personalidades del mismo robot, una detrás de otra.</div>
+  </article>
+
+  <article class="entry">
+    <div class="meta"><span class="tag hito">hito</span><span>19:18</span></div>
+    <h2>Escaparate: todas las frases sin moverse de la base</h2>
+    <p>No hay orden para reproducir un audio cualquiera, pero "buscar robot" siempre reproduce <code>43sound_I_am_here.mp3</code>. <code>escaparate.py</code> instala, para cada frase, el set con ese archivo cambiado por la frase, lanza "buscar robot" y pasa a la siguiente (unos 9 s por frase). Al acabar, o con Ctrl+C, reinstala el set original. Probado con las 3 primeras frases del set borde: <b>se oyeron las tres</b>.</p>
+    <pre><code>./escaparate.py borde      # las 87 frases, unos 13 minutos
+./escaparate.py borde 3    # solo las 3 primeras</code></pre>
+    <div class="video">el robot quieto en la base soltando frase tras frase: ideal para un montaje rápido.</div>
+  </article>
+
+  <article class="entry">
+    <div class="meta"><span class="tag hito">hito</span><span>19:25</span></div>
+    <h2>Borrador del post de la voz</h2>
+    <p><b>Publicado:</b> <a href="https://ablancodev.com/desarrollo/le-he-cambiado-la-voz-a-mi-robot-aspirador/">ablancodev.com/desarrollo/le-he-cambiado-la-voz-a-mi-robot-aspirador</a>. </p>
+    <p>Primer post de la serie, solo con la parte de la voz: de encontrar el robot en la red a instalarle tres personalidades, con huecos para los tres vídeos (héroe, borde, andaluz). Lo del mapa y "Ve" queda para otro post, cuando funcione bien. En <code>post/le-he-cambiado-la-voz-a-mi-robot-aspirador.md</code>, con las capturas ya pixeladas en <code>post/img/</code>.</p>
+  </article>
+
+  <article class="entry">
+    <div class="meta"><span class="tag hito">hito</span><span>19:45</span></div>
+    <h2>Repertorio: las cuatro voces en un solo vídeo</h2>
+    <p>Para grabar la comparación, <code>repertorio.py</code> hace con cada voz la misma mini limpieza: "aquí estoy", sale de la base unos segundos, pausa, vuelve y carga. Orden: original (inglés de fábrica) → héroe → borde → andaluz.</p>
+    <p>Descubrimiento de paso: para volver a la voz de fábrica no hace falta paquete. Basta con <code>download-voice</code> con <code>target-voice = en_US</code> y la URL vacía: el robot vuelve a <code>en_US</code> en cuatro segundos.</p>
+    <pre><code>./repertorio.py                  # las cuatro, 8 s de limpieza cada una
+./repertorio.py 5 borde andaluz  # solo esas, 5 s</code></pre>
+    <div class="video">el vídeo del repertorio: mismo robot, mismos movimientos, cuatro voces.</div>
+  </article>
+
+  <div class="day">14 nov 2026</div>
+
+  <article class="entry">
+    <div class="meta"><span class="tag problema">problema</span><span>15:50</span></div>
+    <h2>Al día siguiente, el robot ha cambiado de IP</h2>
+    <p>Los scripts dejaron de encontrarlo: ni siquiera respondía al ping en su IP de ayer. El "hello" a toda la red lo encontró en otra: el router le había dado una nueva por DHCP. Solución en <code>paseo.py</code> (y, por tanto, en todos los scripts): si el robot no responde, lo busca por su ID con un "hello" y actualiza <code>.env</code> solo. Para evitarlo del todo, mejor reservarle una IP fija en el router.</p>
+  </article>
+
+  <article class="entry">
+    <div class="meta"><span class="tag pendiente">pendiente</span></div>
+    <h2>Siguiente</h2>
+    <p>Instalar el set borde y comprobar que se puede cambiar entre sets. Pendiente aparte: "Ve" (el robot parece desorientado).</p>
+  </article>
+
+</main>
+
+<footer>Imágenes en <code>log/img/</code>. Antes de publicar: revisar que no salgan token, MAC, ID de dispositivo ni la cuenta Xiaomi.</footer>
+</body>
+</html>

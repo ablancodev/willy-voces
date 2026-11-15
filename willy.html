@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Willy</title>
+<style>
+  :root { --bg:#faf8f5; --fg:#1d1b18; --muted:#6b665e; --line:#e4dfd6; --card:#fff;
+          --floor:#d9d2c5; --grid:#ece7de; --route:#e8590c; --pin:#1c64b8; --ok:#2b8a3e; --err:#c92a2a; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+          --bg:#161513; --fg:#ece8e1; --muted:#9a948a; --line:#2e2b27; --card:#1e1c19;
+          --floor:#3a352e; --grid:#262420; --route:#ff8a3d; --pin:#4dabf7; --ok:#51cf66; --err:#ff6b6b; } }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.5 -apple-system, BlinkMacSystemFont, sans-serif; }
+  main { max-width:1000px; margin:0 auto; padding:20px 16px; display:grid; grid-template-columns:1fr 280px; gap:20px; }
+  @media (max-width:760px) { main { grid-template-columns:1fr; } }
+  h1 { font-size:1.4rem; margin:0; } .hint { color:var(--muted); margin:2px 0 12px; font-size:.9rem; }
+  .map { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:8px; }
+  svg { width:100%; height:auto; max-height:75vh; display:block; cursor:crosshair; touch-action:manipulation; }
+  .grid line { stroke:var(--grid); } .floor circle { fill:var(--floor); }
+  .route { fill:none; stroke:var(--route); stroke-width:.015; stroke-linejoin:round; }
+  .pin circle { fill:var(--pin); stroke:var(--card); stroke-width:.02; cursor:pointer; }
+  .pin text { font-size:.14px; fill:var(--fg); font-weight:600; paint-order:stroke; stroke:var(--card); stroke-width:.03; }
+  .pin.sel circle { fill:var(--route); }
+  aside { display:flex; flex-direction:column; gap:12px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px 14px; }
+  .card h2 { font-size:.8rem; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:0 0 8px; }
+  select, button { font:inherit; color:inherit; background:var(--bg); border:1px solid var(--line); border-radius:6px; padding:5px 9px; }
+  select { width:100%; } button { cursor:pointer; } button.go { background:var(--pin); color:#fff; border-color:var(--pin); }
+  ul { list-style:none; margin:0; padding:0; } li { display:flex; align-items:center; gap:6px; padding:5px 0; border-top:1px solid var(--line); }
+  li:first-child { border-top:0; } li .n { flex:1; font-weight:600; } li .c { color:var(--muted); font-size:.8rem; }
+  #status { font-size:.85rem; white-space:pre-wrap; word-break:break-word; } .ok { color:var(--ok); } .err { color:var(--err); }
+</style>
+</head>
+<body>
+<main>
+  <section>
+    <h1>Willy</h1>
+    <p class="hint">Toca el mapa para crear un punto. Toca un punto para seleccionarlo.</p>
+    <div class="map"><svg id="map" xmlns="http://www.w3.org/2000/svg"></svg></div>
+  </section>
+  <aside>
+    <div class="card"><h2>Ruta de fondo</h2><select id="file"></select></div>
+    <div class="card"><h2>Puntos</h2><ul id="list"><li class="c">Aún no hay puntos</li></ul></div>
+    <div class="card"><h2>Robot</h2><div id="status" class="c">Listo.</div></div>
+  </aside>
+</main>
+<script>
+const R = 0.175, M = 0.5;
+let route = [], store = { puntos: {} }, sel = null, box = null;
+const $ = id => document.getElementById(id);
+const api = async (path, body) => {
+  const r = await fetch(path, body ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) } : {});
+  return r.json();
+};
+const status = (msg, cls = "") => { $("status").textContent = msg; $("status").className = cls; };
+
+function bounds() {
+  const pts = route.flat().concat(Object.values(store.puntos).map(p => [p.x, p.y]), [[0, 0]]);
+  const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+  return { x0: Math.min(...xs) - M, x1: Math.max(...xs) + M, y0: Math.min(...ys) - M, y1: Math.max(...ys) + M };
+}
+
+function draw() {
+  box = bounds();
+  const { x0, x1, y0, y1 } = box, w = x1 - x0, h = y1 - y0;
+  // Mundo con y hacia arriba: se dibuja en coordenadas (x, -y)
+  const svg = $("map");
+  svg.setAttribute("viewBox", `${x0} ${-y1} ${w} ${h}`);
+  let g = '<g class="grid">';
+  for (let x = Math.ceil(x0); x <= x1; x++) g += `<line x1="${x}" y1="${-y1}" x2="${x}" y2="${-y0}" stroke-width=".01"/>`;
+  for (let y = Math.ceil(y0); y <= y1; y++) g += `<line x1="${x0}" y1="${-y}" x2="${x1}" y2="${-y}" stroke-width=".01"/>`;
+  g += '</g><g class="floor">';
+  for (const seg of route) for (const [x, y] of seg) g += `<circle cx="${x}" cy="${-y}" r="${R}"/>`;
+  g += "</g>";
+  for (const seg of route) g += `<polyline class="route" points="${seg.map(([x, y]) => `${x},${-y}`).join(" ")}"/>`;
+  g += `<rect x="-0.06" y="-0.06" width=".12" height=".12" fill="currentColor"/>`;
+  for (const [name, p] of Object.entries(store.puntos)) {
+    g += `<g class="pin${name === sel ? " sel" : ""}" data-name="${encodeURIComponent(name)}">
+      <circle cx="${p.x}" cy="${-p.y}" r=".07"/><text x="${p.x + .1}" y="${-p.y + .05}">${escape(name)}</text></g>`;
+  }
+  svg.innerHTML = g;
+  svg.style.color = getComputedStyle(document.body).color;
+  list();
+}
+
+const escape = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+function list() {
+  const items = Object.entries(store.puntos);
+  $("list").innerHTML = items.length ? items.map(([name, p]) => `<li>
+      <span class="n">${escape(name)}</span><span class="c">${p.x.toFixed(2)}, ${p.y.toFixed(2)} m</span>
+      <button class="go" data-go="${encodeURIComponent(name)}">Ve</button>
+      <button data-del="${encodeURIComponent(name)}" title="Borrar">×</button></li>`).join("")
+    : '<li class="c">Aún no hay puntos</li>';
+}
+
+$("map").addEventListener("click", async e => {
+  const pin = e.target.closest(".pin");
+  if (pin) { sel = decodeURIComponent(pin.dataset.name); return draw(); }
+  const svg = $("map"), pt = svg.createSVGPoint();
+  pt.x = e.clientX; pt.y = e.clientY;
+  const w = pt.matrixTransform(svg.getScreenCTM().inverse());
+  const name = prompt(`Nombre del punto en (${w.x.toFixed(2)}, ${(-w.y).toFixed(2)}) m:`);
+  if (!name) return;
+  store = await api("/api/puntos", { nombre: name.trim(), x: w.x, y: -w.y });
+  sel = name.trim(); draw();
+});
+
+$("list").addEventListener("click", async e => {
+  const go = e.target.dataset.go, del = e.target.dataset.del;
+  if (del) { store = await api("/api/borrar", { nombre: decodeURIComponent(del) }); return draw(); }
+  if (go) {
+    const name = decodeURIComponent(go);
+    sel = name; draw();
+    status(`Mandando a "${name}"…`);
+    const r = await api("/api/ve", { nombre: name });
+    if (r.error) status(`Error: ${r.error}`, "err");
+    else status(`Orden enviada a "${name}"\nmetros: ${r.metros.join(", ")}\norden: ${JSON.stringify(r.orden)}\npotencia: silenciosa hasta que vuelva\ngrabando: ${r.grabando}`, "ok");
+  }
+});
+
+$("file").addEventListener("change", loadRoute);
+
+async function loadRoute() {
+  const r = await api(`/api/ruta?f=${encodeURIComponent($("file").value)}`);
+  route = r.tramos || []; draw();
+}
+
+(async () => {
+  const files = await api("/api/rutas");
+  $("file").innerHTML = files.map(f => `<option>${f}</option>`).join("") || "<option>(sin rutas)</option>";
+  const best = files.find(f => f.includes("173347"));
+  if (best) $("file").value = best;
+  store = await api("/api/puntos");
+  await loadRoute();
+})();
+</script>
+</body>
+</html>
