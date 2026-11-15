@@ -423,6 +423,15 @@ pipx inject python-miio "click&lt;8.2"</code></pre>
     <p>Los scripts dejaron de encontrarlo: ni siquiera respondía al ping en su IP de ayer. El "hello" a toda la red lo encontró en otra: el router le había dado una nueva por DHCP. Solución en <code>paseo.py</code> (y, por tanto, en todos los scripts): si el robot no responde, lo busca por su ID con un "hello" y actualiza <code>.env</code> solo. Para evitarlo del todo, mejor reservarle una IP fija en el router.</p>
   </article>
 
+  <div class="day">15 nov 2026</div>
+
+  <article class="entry">
+    <div class="meta"><span class="tag hito">hito</span><span>19:00</span></div>
+    <h2>De carpeta de pruebas a repositorio</h2>
+    <p>Post publicado y short en YouTube, así que tocaba ordenar. Los sets de voz pasan a <code>voces/</code> (con sus .zip listos para instalar), las listas de frases a <code>docs/</code>, este diario a <code>diario/</code>, y todo lo personal o regenerable (rutas grabadas, muestras, el primer paquete fallido) a <code>data/</code>, que no se sube. Entorno con <code>requirements.txt</code> y <code>.venv</code>, <code>.env.example</code> y un README con el vídeo y el enlace al making of. Antes del primer commit, comprobado que no se cuela ni el token, ni la MAC, ni el ID del robot.</p>
+    <p>Nota: las rutas de archivo que aparecen en entradas anteriores de este diario son las de antes de reorganizar.</p>
+  </article>
+
   <article class="entry">
     <div class="meta"><span class="tag pendiente">pendiente</span></div>
     <h2>Siguiente</h2>
