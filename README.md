@@ -133,6 +133,10 @@ El diario completo de la sesión está en [`diario/index.html`](diario/index.htm
 - [GLaDOS UKR](https://github.com/sverdlyuk/glados_ukr), que documenta el formato de los paquetes de voz de Xiaomi e Ijai
 - Voces generadas con [ElevenLabs](https://elevenlabs.io)
 
+## Licencia
+
+[MIT](LICENSE). El extractor de `token-extractor/` mantiene su propia licencia MIT, de Piotr Machowski.
+
 ## Aviso
 
 Proyecto personal para trastear. Usa las mismas órdenes que la app oficial y no toca el firmware, pero úsalo bajo tu responsabilidad. No está afiliado a Xiaomi.
